@@ -1,35 +1,21 @@
 from database import Database
 from writeAJson import writeAJson
+import ProductAnalyzer
+import dataset
 
-db = Database(database="mercado", collection="compras")
-# db.resetDatabase()
+# Exemplo de dados de vendas
+sales_data = [dataset]
 
-# 1.Média de gasto total:
-# result = db.collection.aggregate([
-#     {"$unwind": "$produtos"},
-#     {"$group": {"_id": "$cliente_id", "total": {"$sum": {"$multiply": ["$produtos.quantidade", "$produtos.preco"]}}}},
-#     {"$group": {"_id": None, "media": {"$avg": "$total"}}}
-# ])
+# Criar uma instância da classe ProductAnalyzer
+analyzer = ProductAnalyzer(sales_data)
 
-# writeAJson(result, "Média de gasto total")
+# Exemplo de uso das funções
+total_sales_by_day = analyzer.total_sales_per_day()
+most_sold_product = analyzer.most_sold_product()
+highest_spending_customer = analyzer.highest_spending_customer()
+above_threshold_products = analyzer.products_sold_above_quantity(1)
 
-# # Cliente que mais comprou em cada dia:
-# result = db.collection.aggregate([
-#     {"$unwind": "$produtos"},
-#     {"$group": {"_id": {"cliente": "$cliente_id", "data": "$data_compra"}, "total": {"$sum": {"$multiply": ["$produtos.quantidade", "$produtos.preco"]}}}},
-#     {"$sort": {"_id.data": 1, "total": -1}},
-#     {"$group": {"_id": "$_id.data", "cliente": {"$first": "$_id.cliente"}, "total": {"$first": "$total"}}}
-# ])
-
-# writeAJson(result, "Cliente que mais comprou em cada dia")
-
-# # Produto mais vendido:
-result = db.collection.aggregate([
-    {"$unwind": "$produtos"},
-    {"$group": {"_id": "$produtos.descricao", "total": {"$sum": "$produtos.quantidade"}}},
-    {"$sort": {"total": -1}},
-    {"$limit": 1}
-])
-
-writeAJson(result, "Produto mais vendido")
-
+print("Total de vendas por dia:", total_sales_by_day)
+print("Produto mais vendido:", most_sold_product)
+print("Cliente que mais gastou:", highest_spending_customer)
+print("Produtos com quantidade vendida acima de 1 unidade:", above_threshold_products)
